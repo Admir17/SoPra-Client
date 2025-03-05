@@ -5,7 +5,7 @@ import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import { Button, Form, Input } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // Optionally, you can import a CSS module or file for additional styling:
 // import styles from "@/styles/page.module.css";
 
@@ -14,7 +14,7 @@ interface FormFieldProps {
   value: string;
 }
 
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const [form] = Form.useForm();
@@ -25,42 +25,42 @@ const Login: React.FC = () => {
   // The hook returns an object with the value and two functions
   // Simply choose what you need from the hook:
   const {
-    // value: token, // is commented out because we do not need the token value
+    value: token, // is commented out because we do not need the token value
     set: setToken, // we need this method to set the value of the token to the one we receive from the POST request to the backend server API
     // clear: clearToken, // is commented out because we do not need to clear the token when logging in
   } = useLocalStorage<string>("token", ""); // note that the key we are selecting is "token" and the default value we are setting is an empty string
   // if you want to pick a different token, i.e "usertoken", the line above would look as follows: } = useLocalStorage<string>("usertoken", "");
+
   const handleLogin = async (values: FormFieldProps) => {
     try {
       // Call the API service and let it handle JSON serialization and error handling
-      const response = await apiService.post<User>("/users/login", values);
+      const response = await apiService.post<User>("/users", values);
+
+      console.log("response called");
+      console.log(response);
 
       // Use the useLocalStorage hook that returned a setter function (setToken in line 41) to store the token if available
       if (response.token) {
-        console.log("setting token of user");
-        console.log(response.token);
+        console.log("set token");
         setToken(response.token);
-
-        router.push("/users");
-      } else {
-        alert("Login failed, no token received.");
       }
+
+      // Navigate to the user overview
+      router.push("/users");
     } catch (error) {
       if (error instanceof Error) {
-        console.error(
-          `Something went wrong during the login:\n${error.message}`
-        );
         setError(error.message);
+        // alert(`Something went wrong during the login:\n${error.message}`);
       } else {
-        console.error("An unknown error occurred during login.");
         setError("An unknown error occurred during login.");
+        console.error("An unknown error occurred during login.");
       }
     }
   };
 
   return (
     <div className="login-container">
-      <h1>Login</h1>
+      <h1>Register</h1>
       <br />
       <Form
         form={form}
@@ -83,11 +83,10 @@ const Login: React.FC = () => {
           rules={[{ required: true, message: "Please input your password!" }]}
         >
           <Input.Password placeholder="Enter password" />
-
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" className="login-button">
-            Login
+            Register
           </Button>
         </Form.Item>
       </Form>
@@ -97,4 +96,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Register;

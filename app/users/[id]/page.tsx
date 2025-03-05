@@ -3,6 +3,18 @@
 // try to leverage the component library from antd by utilizing "Card" to display the individual user
 // import { Card } from "antd"; // similar to /app/users/page.tsx
 
-export default function UserDetail() {
-    return (<></>);
-  }
+"use client";
+
+import React from "react";
+
+const Profile: React.FC = () => {
+  return (
+    <div className="card-container">
+      <p>
+        <strong>SampleUser</strong>
+      </p>
+    </div>
+  );
+};
+
+export default Profile;

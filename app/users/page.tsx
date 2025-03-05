@@ -39,39 +39,56 @@ const Dashboard: React.FC = () => {
   // The hook returns an object with the value and two functions
   // Simply choose what you need from the hook:
   const {
-    // value: token, // is commented out because we dont need to know the token value for logout
+    value: token, // is commented out because we dont need to know the token value for logout
     // set: setToken, // is commented out because we dont need to set or update the token value
     clear: clearToken, // all we need in this scenario is a method to clear the token
   } = useLocalStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
 
-  const handleLogout = (): void => {
-    // Clear token using the returned function 'clear' from the hook
-    clearToken();
-    router.push("/login");
-  };
-
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        // apiService.get<User[]> returns the parsed JSON object directly,
-        // thus we can simply assign it to our users variable.
         const users: User[] = await apiService.get<User[]>("/users");
         setUsers(users);
         console.log("Fetched users:", users);
       } catch (error) {
-        if (error instanceof Error) {
-          alert(`Something went wrong while fetching users:\n${error.message}`);
-        } else {
-          console.error("An unknown error occurred while fetching users.");
-        }
+        console.error("Error when retrieving users:", error);
       }
     };
 
     fetchUsers();
-  }, [apiService]); // dependency apiService does not re-trigger the useEffect on every render because the hook uses memoization (check useApi.tsx in the hooks).
+  }, [apiService, token]); // dependency apiService does not re-trigger the useEffect on every render because the hook uses memoization (check useApi.tsx in the hooks).
   // if the dependency array is left empty, the useEffect will trigger exactly once
   // if the dependency array is left away, the useEffect will run on every state change. Since we do a state change to users in the useEffect, this results in an infinite loop.
   // read more here: https://react.dev/reference/react/useEffect#specifying-reactive-dependencies
+
+  const handleLogout = async (): Promise<void> => {
+    try {
+      // look for all existing users
+      const allUsers: User[] = await apiService.get<User[]>("/users");
+
+      // get user id by token of logged in user from local storage
+      const currentUser = allUsers.find((user) => user.token === token);
+
+      if (!currentUser) {
+        throw new Error("Current user not found");
+      }
+
+      // logout user from server and update status property
+      await apiService.post(`/users/${currentUser.id}/logout`, {});
+
+      // delete token and navigate back to login page
+      clearToken();
+      router.push("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+      alert(
+        "There was an error logging out. You will be redirected to the login!"
+      );
+      router.push("/login");
+    }
+  };
+
+  if (!token) return null; // don't render view if token is not present
 
   return (
     <div className="card-container">

@@ -43,10 +43,12 @@ a {
 
 .login-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   background-color: rgb(41, 44, 59);
+  color: white;
 }
 
 .login-button {
@@ -59,4 +61,11 @@ a {
   align-items: center;
   min-height: 100vh;
   background-color: rgb(41, 44, 59);
+}
+
+.error-container {
+  background: rgb(197, 38, 38);
+  padding: 15px 20px;
+  color: white;
+  width: 400px;
 }
