@@ -14,7 +14,7 @@ export class ApiService {
   }
 
   /**
-   * Helper function to check the response, parse JSON,
+   * Helper function to check the response, parse JSON
    * and throw an error if the response is not OK.
    *
    * @param res - The response from fetch.
