@@ -65,7 +65,7 @@ const Profile: React.FC = () => {
 
   return (
     <Card title={`Profile: ${user.username}`} className="card-container">
-      <p>Online-Status: {user.status}</p>
+      <p>Online-Status: {user.status === "ONLINE" ? "🟢": "🔴"} {user.status}</p>
       <p>
       Date of creation: {user.creationDate?.split("T")[0] || "Not available"}
       </p>

@@ -8,7 +8,6 @@ import type { TableProps } from "antd";
 
 const columns: TableProps<User>["columns"] = [
   { title: "Username", dataIndex: "username", key: "username" },
-  { title: "Name", dataIndex: "name", key: "name" },
   { title: "Birthday", dataIndex: "birthDate", key: "birthDate" },
   { title: "Creation Date", dataIndex: "creationDate", key: "creationDate" },
   { title: "Id", dataIndex: "id", key: "id" },
